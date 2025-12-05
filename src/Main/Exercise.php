@@ -4,7 +4,6 @@ namespace Aoc2025\Main;
 
 class Exercise
 {
-    const FILE_PATH = '/Users/arne/dev/';
     protected $folderPath;
     protected static $arg = null;
 
@@ -18,7 +17,8 @@ class Exercise
         $exploded = explode('\\', get_called_class());
         array_pop($exploded);
         array_splice($exploded, 1, 0, 'src');
-        $filePath = self::FILE_PATH . implode('/', $exploded) . '/';
+        $filePath = __DIR__ . '/../../../' .  implode('/', $exploded) . '/';
+
         $fileName = 'input' . (self::$arg ? '_' . self::$arg : '') .  '.txt';
 
         if (!$ignoreNewlines) {
