@@ -20,8 +20,8 @@ class Ex03 extends Exercise
         $sum = 0;
 
         foreach ($arr as $line) {
-            $sum += $this->getLargestPair(str_split($line));
-
+            // $sum += $this->getLargestPair(str_split($line)); // part I
+            $sum += (int)implode($this->getLargestDozen(str_split($line)));
         }
 
         return $sum;
@@ -46,6 +46,27 @@ class Ex03 extends Exercise
         }
 
         return (int)((string)$largest . (string)$secondLargest);
+    }
 
+    public function getLargestDozen($arr) {
+        if (count($arr) == 12) {
+            return $arr;
+        }
+
+        $arr = $this->removeOne($arr);
+        return $this->getLargestDozen($arr);        
+    }
+
+    function removeOne($arr) : array {
+        foreach (range(1, count($arr) - 1) as $pos) {
+            if ($arr[$pos - 1] < $arr[$pos]) {
+                unset($arr[$pos - 1]);
+                return array_values($arr);
+            }
+            
+        }
+        
+        unset($arr[$pos]);
+        return array_values($arr);
     }
 }
