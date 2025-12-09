@@ -7,9 +7,6 @@ use Aoc2025\Main\Exercise;
 /**
  * 363447258615552: too high
  * 357674099117260 ? 
- * 
- * 
- * 
  */
 
 class Ex05 extends Exercise
