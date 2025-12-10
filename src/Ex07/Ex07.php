@@ -28,12 +28,14 @@ class Ex07 extends Exercise
             if ($key % 2 == 0) {
                 continue;
             }
-
+            
             $row = str_split($row, 1);
-
+            
             $newBeams = [];
             foreach ($beams as $location) {
                 if ($row[$location] == '^') {
+                    echo "key-location: {$key}-{$location}\n";
+                    
                     $this->splits++;
                     $newBeams[] = $location - 1;
                     $newBeams[] = $location + 1;
@@ -42,7 +44,6 @@ class Ex07 extends Exercise
                 }
             }
 
-            echo "current key is {$key}\n";
             $beams = array_unique($newBeams);
         }
     }
