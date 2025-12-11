@@ -7,49 +7,37 @@ use Aoc2025\Main\Exercise;
 class Ex09 extends Exercise
 {
     public $locations = [];
-    public $distances = [];
-    public $chains = [];
 
     public function __construct()
     {
         $inputArr = $this->getFileContents();
-        $this->getCoordinates($inputArr);
+        foreach ($inputArr as $row) {
+            $this->locations[] = explode(',', $row);
+        }
         
-        $result = $this->run($inputArr);
+        $result = $this->run();
         echo "result: {$result}\n";
     }
 
-    public function run($arr)
+    public function run()
     {
         $maxArea = 0;
 
         foreach ($this->locations as $key => $loc) {
             if ($key < array_key_last($this->locations)) {
                 foreach (range($key + 1, count($this->locations) - 1) as $index) {
-                    
+                    $a = abs($loc[0] - $this->locations[$index][0]) + 1;
+                    $b = abs($loc[1] - $this->locations[$index][1]) + 1;
 
+                    $area = $a * $b;
 
-                    echo "testing: \n";
-                    print_r($loc);
-                    echo "vs\n";
-                    print_r($this->locations[$index]);
-                   
-                }
-                # code...
-            }
-        }
-        
-        // print_r($this->locations);
-    }
-
-    function getCoordinates($arr) {
-        foreach ($arr as $rowKey => $row) {
-            $splat = str_split($row);
-            foreach ($splat as $colKey => $value) {
-                if ($value == '#') {
-                    $this->locations[] = [$rowKey, $colKey];
+                    if ($area > $maxArea) {
+                        $maxArea = $area;
+                    }
                 }
             }
         }
+
+        return $maxArea;
     }
 }
