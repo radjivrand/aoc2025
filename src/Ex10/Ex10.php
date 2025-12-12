@@ -9,6 +9,7 @@ class Ex10 extends Exercise
     protected const RANDOM_ATTEMPTS = 20;
 
     protected array $sets;
+    protected array $perms;
 
     public function __construct()
     {
@@ -20,55 +21,78 @@ class Ex10 extends Exercise
 
     public function run($arr)
     {
-        foreach ($this->sets as $set) {
-            $startingButton = 0;
+        $res = 0;
 
-            $dice = $this->rollDice(count($set['switches']) - 1);
-
-            $counter = 0;
-            foreach ($dice as $switchIndex) {
-                $switch = $set['switches'][$switchIndex];
-
-                $a = bindec($startingButton);
-                $b = bindec($switch);
-
-
-                echo "checking conversion for: {$a} and {$b}, switch no is {$switchIndex}: {$switch}\n";
-
-                $res = $a & $b;
-
-                echo "result is {$res} \n";
-
-                $resString = decbin($res);
-
-                echo "startingButton: {$startingButton} & switch: {$switch} = {$resString}\n";
-                $startingButton = bindec($res);
-
-            }
-            
-
+        foreach ($this->sets as $key => $set) {
+            echo "processing set no {$key}...\n";
+            $res += $this->findFastestWay($set);
         }
+
+        echo "=============\n";
+        echo "best result together is {$res}\n";
+    }
+    
+
+    function findFastestWay($set) {
+        $permCount = count($set['switches']);
+                        
+        foreach (range(1,8) as $depth) {
+            $perms = $this->combinations(range(0, $permCount - 1), $depth);
+
+            foreach ($perms as $perm) {
+                $perms = implode(' - ', $perm);
+                $buttonState = 0;
+    
+                foreach ($perm as $try) {
+                    $switch = $set['switches'][$try];
+                    $state = $buttonState ^ $switch;
+        
+                    if ($state == $set['button']) {
+                        return $depth;
+                    }
+    
+                    $buttonState = $state;
+                }
+            }
+        }
+
+        echo "could not find yet, skippin...\n";
+        return 0;
     }
 
-    function rollDice($amount) {
-        $res = [];
-
-        for ($i=0; $i < self::RANDOM_ATTEMPTS; $i++) { 
-            $res[] = rand(0, $amount);
+    function combinations($set = [], $size = 0) {
+        if ($size == 0) {
+            return [[]];
         }
 
-        return $res;
+        if ($set == []) {
+            return [];
+        }
+
+        $prefix = [array_shift($set)];
+        $result = [];
+
+        foreach ($this->combinations($set, $size-1) as $suffix) {
+            $result[] = array_merge($prefix, $suffix);
+        }
+
+        foreach ($this->combinations($set, $size) as $next) {
+            $result[] = $next;
+        }
+
+        return $result;
     }
 
     function splitInput($arr) {
         foreach ($arr as $row) {
             $set = [];
             $things = explode(' ', $row);
+            $first = array_shift($things);
 
-            $set['button'] = $this->buttonToBinary(array_shift($things));
-            $set['length'] = strlen($set['button']) - 2;
+            $set['button'] = $this->buttonToBinary($first);
+            $set['length'] = strlen($first) - 2;
             $set['joltage'] = array_pop($things);
-            $set['switches'] = $this->getSwitches($things, $set['button']);       
+            $set['switches'] = $this->getSwitches($things, $first);
             
             $this->sets[] = $set;
         }
@@ -87,7 +111,7 @@ class Ex10 extends Exercise
                 $binStr .= in_array($index, $arr) ? '1' : '0';
             }
 
-            $elem = $binStr;
+            $elem = bindec($binStr);
         });
 
         return $arr;
@@ -104,6 +128,6 @@ class Ex10 extends Exercise
             $binString .= ($value == '.' ? '0' : '1');
         }
 
-        return (binary)$binString;
+        return bindec($binString);
     }
 }
